@@ -6,16 +6,18 @@
 #define WINDOW_TITLE "OpenGL Window"
 
 void drawCone();
-void drawBall();
-void drawTopping();
 void drawTower();
 void drawPencil();
+
+void drawCloud(float size);
+void drawCirle(float x1, float y1, float radius);
 
 void drawCuboid(float topLeftX, float topLeftY, float topLeftZ, float topRightX, float topRightY, float topRightZ, float botLeftX, float botLeftY, float botLeftZ, float botRightX, float botRightY, float botRightZ);
 void drawBridgeCuboid(float size, float widthScale, float thinness, float longness);
 void drawCylinder(double baseRadius, double topRadius, double height, int slices, int stacks);
 void drawBridge();
 void drawBridgeLine();
+void drawMoon();
 
 void perspectiveGL(GLdouble fovY, GLdouble aspect, GLdouble zNear, GLdouble zFar);
 float speed = 0;
@@ -167,7 +169,7 @@ void display()
     {
         glTranslatef(-0.8, -1.2 + bridgeLineUp, 0);
         glRotatef(bridgeDegree, 0, 0, 1);
-        glColor3ub(255, 0, 0);
+        glColor3ub(146, 113, 55);
         drawBridgeLine();
     }
     glPopMatrix();
@@ -177,10 +179,47 @@ void display()
         glRotatef(180, 0, 1, 0);
         glTranslatef(-0.8, -1.2 + bridgeLineUp, 0);
         glRotatef(bridgeDegree, 0, 0, 1);
-        glColor3ub(0, 255, 0);
+        glColor3ub(146, 113, 55);
         drawBridgeLine();
     }
     glPopMatrix();
+
+    glPushMatrix();
+    {
+        glColor3ub(252, 212, 64);
+        glTranslatef(0, 5, 0);
+        drawMoon();
+    }
+    glPopMatrix();
+
+    glPushMatrix();
+    {
+        glTranslatef(-5, 1.2, -15);
+        drawCloud(0.15);
+    }
+    glPopMatrix();
+
+    glPushMatrix();
+    {
+        glTranslatef(-7, 1.2, -15);
+        drawCloud(0.15);
+    }
+    glPopMatrix();
+
+    glPushMatrix();
+    {
+        glTranslatef(-2, 1.2, -15);
+        drawCloud(0.15);
+    }
+    glPopMatrix();
+    
+    glPushMatrix();
+    {
+        glTranslatef(4, 1.2, -15);
+        drawCloud(0.15);
+    }
+    glPopMatrix();
+    
 }
 
 void drawCone()
@@ -204,67 +243,6 @@ void drawCone()
     glColor3ub(98, 66, 40);
     gluQuadricDrawStyle(cylinder, GLU_LINE);
     gluCylinder(cylinder, 0.011, 0.31, 1, 5, 5);
-    gluDeleteQuadric(cylinder);
-    glPopMatrix();
-}
-
-void drawBall()
-{
-    glPushMatrix();
-    GLUquadricObj *sphere = NULL;
-    sphere = gluNewQuadric();
-
-    glTranslatef(0, 0.6, 0);
-    glColor3ub(243, 229, 171);
-    gluSphere(sphere, 0.31, 50, 50);
-    gluDeleteQuadric(sphere);
-    glPopMatrix();
-
-    glPushMatrix();
-    sphere = gluNewQuadric();
-    glTranslatef(0, 0.3, 0);
-    glColor3ub(128, 90, 70);
-    gluSphere(sphere, 0.39, 50, 50);
-    gluDeleteQuadric(sphere);
-    glPopMatrix();
-}
-
-void drawTopping()
-{
-    glPushMatrix();
-    GLUquadricObj *cylinder = NULL;
-    cylinder = gluNewQuadric();
-    glTranslatef(0.2, 0.8, 0.15);
-    glColor3ub(61, 36, 28);
-    glRotatef(110, 1, 1, 0);
-    gluCylinder(cylinder, 0.01, 0.01, 0.1, 15, 15);
-    gluDeleteQuadric(cylinder);
-    glPopMatrix();
-
-    glPushMatrix();
-    cylinder = gluNewQuadric();
-    glTranslatef(-0.2, 0.8, 0.155);
-    glColor3ub(102, 45, 28);
-    glRotatef(50, 0, 1, 0);
-    gluCylinder(cylinder, 0.01, 0.01, 0.1, 15, 15);
-    gluDeleteQuadric(cylinder);
-    glPopMatrix();
-
-    glPushMatrix();
-    cylinder = gluNewQuadric();
-    glRotatef(50, 0, 1, 0);
-    glTranslatef(0.2, 0.85, 0);
-    glColor3ub(219, 104, 133);
-    gluCylinder(cylinder, 0.01, 0.01, 0.1, 15, 15);
-    gluDeleteQuadric(cylinder);
-    glPopMatrix();
-
-    glPushMatrix();
-    cylinder = gluNewQuadric();
-    glColor3ub(234, 171, 102);
-    glRotatef(250, 1, 0, 0);
-    glTranslatef(0, 0, 0.5);
-    gluCylinder(cylinder, 0.05, 0.05, 0.9, 15, 15);
     gluDeleteQuadric(cylinder);
     glPopMatrix();
 }
@@ -511,7 +489,7 @@ void drawBridge()
     {
         glTranslatef(-1.2, bridgeDown + 0.05, -0.21);
         glRotatef(bridgeDegree, 0, 0, 1);
-        glColor3ub(255, 0, 0);
+        glColor3ub(183, 141, 69);
         glRotatef(270, 0, 0, 1);
         drawBridgeCuboid(1.5, 4, 30, 0.8);
     }
@@ -521,7 +499,7 @@ void drawBridge()
     {
         glTranslatef(1.2, bridgeDown, -0.21);
         glRotatef(-bridgeDegree, 0, 0, 1);
-        glColor3ub(0, 255, 0);
+        glColor3ub(183, 141, 69);
         glRotatef(-270, 0, 0, 1);
         drawBridgeCuboid(1.5, 4, 30, 0.8);
     }
@@ -551,22 +529,76 @@ void drawBridgeLine()
     glPushMatrix();
     {
         glLineWidth(10);
-        // Call only once for all remaining points
         glBegin(GL_LINES);
+        {
+            float x = 0.5 * sin(42);
+            float y = 0.5 * cos(42);
+            glVertex3f(x, y, 0); // First endpoint of line
 
-        float x = 0.5 * sin(42);
-        float y = 0.5 * cos(42);
-        glVertex3f(x, y, 0); // First endpoint of line
-
-        x = 0.5 * sin(42 + 3.142);
-        y = 0.5 * cos(42 + 3.142);
-        glVertex3f(x, y, 0); // Second endpoint of line
+            x = 0.5 * sin(42 + 3.142);
+            y = 0.5 * cos(42 + 3.142);
+            glVertex3f(x, y, 0); // Second endpoint of line
+        }
         glEnd();
-
         glLineWidth(1);
     }
     glPopMatrix();
+}
 
+void drawMoon()
+{
+    float x = 0, y = 0, z = -15, GL_PI = 3.142, radius = 0.4;
+    glPushMatrix();
+    {
+        // Call only once for all remaining points
+        glBegin(GL_LINES);
+
+        // All lines lie in the xy plane.
+        for (float angle = 0.0f; angle <= GL_PI; angle += (GL_PI / 50.0f))
+        {
+            // Top half of the circle
+            x = radius * sin(angle);
+            y = radius * cos(angle);
+            glVertex3f(x + 1, y + 2, z); // First endpoint of line
+
+            // Bottom half of the circle
+            x = radius * sin(angle + GL_PI);
+            y = radius * cos(angle + GL_PI);
+            glVertex3f(x + 1, y + 2, z); // Second endpoint of line
+        }
+        // Done drawing points
+        glEnd();
+    }
+    glPopMatrix();
+}
+
+void drawCloud(float size)
+{
+    drawCirle(0, 0, size);
+    drawCirle(0.2, 0, size);
+
+    drawCirle(0.35, 0.1, size);
+
+    drawCirle(0.2, 0.2, size);
+    drawCirle(0, 0.2, size);
+
+    drawCirle(-0.15, 0.1, size);
+}
+
+void drawCirle(float x1, float y1, float radius)
+{
+    float x2 = x1, y2 = y1;
+
+    glColor3ub(246, 246, 246);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x1, y1);
+    for (float angle = 0; angle <= 360; angle += 2)
+    {
+        x2 = x1 + cos(angle) * radius;
+        y2 = y1 + sin(angle) * radius;
+        glVertex2f(x2, y2);
+    }
+    glEnd();
 }
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
