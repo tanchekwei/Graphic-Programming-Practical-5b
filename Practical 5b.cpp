@@ -18,14 +18,15 @@ void drawCylinder(double baseRadius, double topRadius, double height, int slices
 void drawBridge();
 void drawBridgeLine();
 void drawMoon();
+void drawClouds();
 
-void perspectiveGL(GLdouble fovY, GLdouble aspect, GLdouble zNear, GLdouble zFar);
 float speed = 0;
+float perspectiveX = 0, perspectiveY = 0, perspectiveZ = -8;
+float orthoX = 0, orthoY = 0.5, orthoZ = 0;
+float bridgeDegree = 0, bridgeLineUp = 0;
+
 bool rotate = false;
-float z = -8, x = 0, y = 0, bridgeDegree = 0, bridgeLineUp = 0;
-
 bool isOrtho = false;
-
 bool isLift = false;
 
 double w = 1920;
@@ -75,17 +76,35 @@ LRESULT WINAPI WindowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
                 rotate = true;
         }
         else if (wParam == VK_RIGHT)
-            x += 0.1;
+        {
+            perspectiveX -= 0.1;
+            orthoX -= 0.1;
+        }
         else if (wParam == VK_LEFT)
-            x -= 0.1;
+        {
+            perspectiveX += 0.1;
+            orthoX += 0.1;
+        }
         else if (wParam == VK_UP)
-            y += 0.1;
+        {
+            perspectiveY -= 0.1;
+            orthoY -= 0.1;
+        }
         else if (wParam == VK_DOWN)
-            y -= 0.1;
+        {
+            perspectiveY += 0.1;
+            orthoY += 0.1;
+        }
         else if (wParam == VK_NUMPAD8)
-            z += 0.1;
+        {
+            perspectiveZ += 0.1;
+            orthoZ += 0.1;
+        }
         else if (wParam == VK_NUMPAD2)
-            z -= 0.1;
+        {
+            perspectiveZ -= 0.1;
+            orthoZ -= 0.1;
+        }
     default:
         break;
     }
@@ -128,21 +147,11 @@ bool initPixelFormat(HDC hdc)
 
 void display()
 {
-
+    glClearColor(0, 0.7490, 1, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    // glLoadIdentity();
-    // glTranslatef( 0, 0, -5 );
-
     glRotatef(speed, 0, 1, 0);
-
-    // glPushMatrix();
-    // {
-    //     glScalef(0.5, 0.5, 0.5);
-    //     drawBridge();
-    // }
-    // glPopMatrix();
 
     float towerDistance = 1.25;
     glPushMatrix();
@@ -192,34 +201,7 @@ void display()
     }
     glPopMatrix();
 
-    glPushMatrix();
-    {
-        glTranslatef(-5, 1.2, -15);
-        drawCloud(0.15);
-    }
-    glPopMatrix();
-
-    glPushMatrix();
-    {
-        glTranslatef(-7, 1.2, -15);
-        drawCloud(0.15);
-    }
-    glPopMatrix();
-
-    glPushMatrix();
-    {
-        glTranslatef(-2, 1.2, -15);
-        drawCloud(0.15);
-    }
-    glPopMatrix();
-    
-    glPushMatrix();
-    {
-        glTranslatef(4, 1.2, -15);
-        drawCloud(0.15);
-    }
-    glPopMatrix();
-    
+    drawClouds();
 }
 
 void drawCone()
@@ -227,10 +209,6 @@ void drawCone()
     glPushMatrix();
     GLUquadricObj *cylinder = NULL;
     cylinder = gluNewQuadric();
-    // glRotatef(270, 1, 0, 0);
-    // glTranslatef(0, 0, -1);
-    // glColor3ub(186, 129, 83);
-    // glPointSize(2);
     gluQuadricDrawStyle(cylinder, GLU_FILL);
     gluCylinder(cylinder, 0.01, 0.3, 1, 20, 20);
     gluDeleteQuadric(cylinder);
@@ -238,8 +216,6 @@ void drawCone()
 
     glPushMatrix();
     cylinder = gluNewQuadric();
-    // glRotatef(270, 1, 0, 0);
-    // glTranslatef(0, 0, -1);
     glColor3ub(98, 66, 40);
     gluQuadricDrawStyle(cylinder, GLU_LINE);
     gluCylinder(cylinder, 0.011, 0.31, 1, 5, 5);
@@ -296,18 +272,6 @@ void drawTower()
                    0, -towerCubeWidth);
     }
     glPopMatrix();
-
-    // glPushMatrix();
-    // {
-    //     GLUquadricObj *cylinder = NULL;
-    //     cylinder = gluNewQuadric();
-    //     glColor3ub(234, 171, 102);
-    //     glRotatef(-90, 1, 0, 0);
-    //     glTranslatef(0, 0, 0);
-    //     gluCylinder(cylinder, 0.4, 0.4, 2, 15, 15);
-    //     gluDeleteQuadric(cylinder);
-    // }
-    // glPopMatrix();
 }
 
 void drawPencil()
@@ -402,42 +366,36 @@ void drawBridgeCuboid(float size, float widthScale, float thinness, float longne
 {
     glBegin(GL_QUADS);
     // front
-    // glColor3ub(30, 136, 229);
     glVertex3f(0, 0, size / widthScale);
     glVertex3f(size / thinness, 0, size / widthScale);
     glVertex3f(size / thinness, 0, 0);
     glVertex3f(0, 0, 0);
 
     // left
-    // glColor3ub(223, 120, 239);
     glVertex3f(0, size * longness, size / widthScale);
     glVertex3f(0, 0, size / widthScale);
     glVertex3f(0, 0, 0);
     glVertex3f(0, size * longness, 0);
 
     // bottom
-    // glColor3ub(128, 226, 126);
     glVertex3f(0, size * longness, 0);
     glVertex3f(size / thinness, size * longness, 0);
     glVertex3f(size / thinness, 0, 0);
     glVertex3f(0, 0, 0);
 
     // right
-    // glColor3ub(255, 255, 114);
     glVertex3f(size / thinness, 0, size / widthScale);
     glVertex3f(size / thinness, size * longness, size / widthScale);
     glVertex3f(size / thinness, size * longness, 0);
     glVertex3f(size / thinness, 0, 0);
 
     // behind
-    // glColor3ub(255, 201, 71);
     glVertex3f(size / thinness, size * longness, size / widthScale);
     glVertex3f(0, size * longness, size / widthScale);
     glVertex3f(0, size * longness, 0);
     glVertex3f(size / thinness, size * longness, 0);
 
     // top
-    // glColor3ub(115, 232, 255);
     glVertex3f(0, size * longness, size / widthScale);
     glVertex3f(size / thinness, size * longness, size / widthScale);
     glVertex3f(size / thinness, 0, size / widthScale);
@@ -469,7 +427,7 @@ void drawBridge()
 
     glPushMatrix();
     {
-        glColor3ub(104, 160, 176);
+        glColor3ub(140, 255, 255);
         glTranslatef(0, bridgeUp, -0.21);
         glRotatef(90, 0, 0, 1);
         drawBridgeCuboid(1.5, 4, 30, 1);
@@ -478,7 +436,7 @@ void drawBridge()
 
     glPushMatrix();
     {
-        glColor3ub(104, 160, 176);
+        glColor3ub(140, 255, 255);
         glTranslatef(0, bridgeUp + 0.05, -0.21);
         glRotatef(-90, 0, 0, 1);
         drawBridgeCuboid(1.5, 4, 30, 1);
@@ -507,7 +465,7 @@ void drawBridge()
 
     glPushMatrix();
     {
-        glColor3ub(104, 160, 176);
+        glColor3ub(140, 255, 255);
         glTranslatef(-1.5, bridgeDown, -0.21);
         glRotatef(90, 0, 0, 1);
         drawBridgeCuboid(1.5, 4, 30, 1);
@@ -516,7 +474,7 @@ void drawBridge()
 
     glPushMatrix();
     {
-        glColor3ub(104, 160, 176);
+        glColor3ub(140, 255, 255);
         glTranslatef(1.5, bridgeDown + 0.05, -0.21);
         glRotatef(-90, 0, 0, 1);
         drawBridgeCuboid(1.5, 4, 30, 1);
@@ -585,6 +543,51 @@ void drawCloud(float size)
     drawCirle(-0.15, 0.1, size);
 }
 
+void drawClouds()
+{
+    glPushMatrix();
+    {
+        glTranslatef(-5, 1.5, -15);
+        drawCloud(0.15);
+    }
+    glPopMatrix();
+
+    glPushMatrix();
+    {
+        glTranslatef(-7, 1.2, -15);
+        drawCloud(0.15);
+    }
+    glPopMatrix();
+
+    glPushMatrix();
+    {
+        glTranslatef(-2, 1.5, -15);
+        drawCloud(0.15);
+    }
+    glPopMatrix();
+
+    glPushMatrix();
+    {
+        glTranslatef(4, 1.2, -15);
+        drawCloud(0.15);
+    }
+    glPopMatrix();
+
+    glPushMatrix();
+    {
+        glTranslatef(8, 1.5, -15);
+        drawCloud(0.15);
+    }
+    glPopMatrix();
+
+    glPushMatrix();
+    {
+        glTranslatef(13, 1.2, -15);
+        drawCloud(0.15);
+    }
+    glPopMatrix();
+}
+
 void drawCirle(float x1, float y1, float radius)
 {
     float x2 = x1, y2 = y1;
@@ -592,7 +595,7 @@ void drawCirle(float x1, float y1, float radius)
     glColor3ub(246, 246, 246);
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(x1, y1);
-    for (float angle = 0; angle <= 360; angle += 2)
+    for (float angle = 0; angle <= 360; angle += 10)
     {
         x2 = x1 + cos(angle) * radius;
         y2 = y1 + sin(angle) * radius;
@@ -654,9 +657,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-
-        // setup the camera
-        // handle resolution problem
+        // setup the camera and
         // toggle different view mode
         if (isOrtho)
         {
@@ -667,7 +668,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
 
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
-            // glTranslatef(0, 0, z + 9);
+            glTranslatef(orthoX, orthoY, orthoZ);
         }
         else
         {
@@ -678,8 +679,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
 
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
-            glTranslatef(x, y, z);
+            glTranslatef(perspectiveX, perspectiveY, perspectiveZ);
         }
+
         display();
 
         if (rotate)
@@ -714,16 +716,4 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
     }
     UnregisterClass(WINDOW_TITLE, wc.hInstance);
     return true;
-}
-
-void perspectiveGL(GLdouble fovY, GLdouble aspect, GLdouble zNear, GLdouble zFar)
-{
-    const GLdouble pi = 3.1415926535897932384626433832795;
-    GLdouble fW, fH;
-
-    //fH = tan( (fovY / 2) / 180 * pi ) * zNear;
-    fH = tan(fovY / 360 * pi) * zNear;
-    fW = fH * aspect;
-
-    glFrustum(-fW, fW, -fH, fH, zNear, zFar);
 }
